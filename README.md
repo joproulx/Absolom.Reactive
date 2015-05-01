@@ -26,7 +26,7 @@ var output = input.SelectMany(async i =>
 input.Buffer(10).Subscribe(l => Console.WriteLine("Input:  " + string.Join(",", l)));
 output.Buffer(10).Subscribe(l => Console.WriteLine("Output: " + string.Join(",", l)));
 ``` 
-You can have a result like this:
+produce a result like this proving that the order is not maintained:
 ```
 Input:  1,2,3,4,5,6,7,8,9,10
 Output: 9,4,10,6,8,2,3,7,1,5
