@@ -1,8 +1,6 @@
 # Absolom.Reactive
-Extension methods for Reactive Extension (Rx, C#). 
-
+Extension methods for Reactive Extension (Rx, C#)
 ###Description
-
 One of the many ```Observable.SelectMany()``` overloads has the following signature:
 
 ```c#
@@ -26,7 +24,7 @@ var output = input.SelectMany(async i =>
 input.Buffer(10).Subscribe(l => Console.WriteLine("Input:  " + string.Join(",", l)));
 output.Buffer(10).Subscribe(l => Console.WriteLine("Output: " + string.Join(",", l)));
 ``` 
-produce a result like this proving that the order is not maintained:
+produce a result like this:
 ```
 Input:  1,2,3,4,5,6,7,8,9,10
 Output: 9,4,10,6,8,2,3,7,1,5
