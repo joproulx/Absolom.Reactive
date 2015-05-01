@@ -11,19 +11,17 @@ namespace Absolom.Reactive.Output
     {
         static void Main(string[] args)
         {
+            var input = Observable.Range(1, 10);
 
-            var range = Observable.Range(1, 10);
-
-            
-
-            var observable = range.SelectManyEx(async i =>
+            Random random = new Random();
+            var output = input.SelectMany(async i =>
             {
-                await Task.Delay(1000 - (i * 100));
-                Console.WriteLine(i);
+                await Task.Delay(random.Next(0, 1000));
                 return i;
             });
 
-            observable.Subscribe(Console.WriteLine, () => Console.WriteLine("Completed!"));
+            input.Buffer(10).Subscribe(l => Console.WriteLine("Input:  " + string.Join(",", l)));
+            output.Buffer(10).Subscribe(l => Console.WriteLine("Output: " + string.Join(",", l)));
             Console.ReadKey();
         }
     }

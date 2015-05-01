@@ -7,11 +7,11 @@ namespace Absolom.Reactive
     public static class ObservableExtensions
     {
 
-        public static IObservable<T> SelectManyEx<T>(this IObservable<T> source, Func<T, Task<T>> selectorAsync)
+        public static IObservable<TOut> SelectManyEx<TIn, TOut>(this IObservable<TIn> source, Func<TIn, Task<TOut>> selectorAsync)
         {
-            return Observable.Create<T>(o =>
+            return Observable.Create<TOut>(o =>
             {
-                Task<T> current = null;
+                Task<TOut> current = null;
 
                 var sub = source.Subscribe(u =>
                 {
