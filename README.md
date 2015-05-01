@@ -3,7 +3,7 @@ Extension methods for Reactive Extension (Rx, C#).
 
 ###Description
 
-```Observable.SelectMany()``` has many overloads from which you can find the following one:
+One of the many ```Observable.SelectMany()``` overloads has the following signature:
 
 ```c#
 IObservable<TResult> SelectMany<TSource, TResult>(Func<TSource, Task<TResult>> selector)
