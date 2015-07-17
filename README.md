@@ -15,7 +15,7 @@ This is an example of the behavior:
 var input = Observable.Range(1, 10);
 
 Random random = new Random();
-var output = input.SelectMany(async i =>
+var output = input.Select(async i =>
 {
     await Task.Delay(random.Next(0, 1000));
     return i;
@@ -34,8 +34,8 @@ In some cases, you don't mind about the order, so the behavior is perfectly vali
 Input:  1,2,3,4,5,6,7,8,9,10
 Output: 1,2,3,4,5,6,7,8,9,10
 ```
-#####SelectManyEx
-```Absolom.Reactive``` library offers a ```SelectManyEx()``` method that lets you do just that. 
+#####Select
+```Absolom.Reactive``` library offers a ```Select()``` method that lets you do just that. 
 ```c#
-IObservable<TResult> SelectManyEx<TSource, TResult>(Func<TSource, Task<TResult>> selector)
+IObservable<TResult> Select<TSource, TResult>(Func<TSource, Task<TResult>> selector)
 ``` 
