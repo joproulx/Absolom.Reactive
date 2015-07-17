@@ -1,5 +1,8 @@
 # Absolom.Reactive
 Extension methods for Reactive Extension (Rx, C#)
+
+Gist: https://gist.github.com/joproulx/3a347e7081f589c5301e.js
+
 ###Description
 One of the many ```Observable.SelectMany()``` overloads has the following signature:
 
