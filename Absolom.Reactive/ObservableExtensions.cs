@@ -6,79 +6,33 @@ namespace Absolom.Reactive
 {
     public static class ObservableExtensions
     {
-
-        public static IObservable<TOut> SelectManyEx<TIn, TOut>(this IObservable<TIn> source, Func<TIn, Task<TOut>> selectorAsync)
+        public static IObservable<TOut> Select<TIn, TOut>(this IObservable<TIn> source, Func<TIn, Task<TOut>> asyncSelector)
         {
-            return Observable.Create<TOut>(o =>
+            return Observable.Create<TOut>(observer =>
             {
-                Task<TOut> current = null;
+                Task task = Task.FromResult(default(object));
 
-                var sub = source.Subscribe(u =>
-                {
-                    try
+                return source.Subscribe(value =>
                     {
-                        if (current == null)
-                        {
-                            current = selectorAsync(u);
-                        }
-                        else
-                        {
-                            var next = selectorAsync(u);
-                            var last = ContinueNext(current, o);
-                            current = last.Then(next);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        o.OnError(ex);
-                    }
-                },
-                o.OnError,
-                () =>
-                {
-                    if (current == null)
-                        o.OnCompleted();
-                    else
-                        Complete(current, o);
-                });
+                        var asyncProjection = asyncSelector(value);
 
-                return sub.Dispose;
+                        task = Task.WhenAll(task, asyncProjection)
+                                   .ContinueWith(_ =>
+                                   {
+                                       try
+                                       {
+                                           observer.OnNext(asyncProjection.Result);
+                                       }
+                                       catch (Exception ex)
+                                       {
+                                           observer.OnError(ex);
+                                       }
+                                   }, TaskContinuationOptions.ExecuteSynchronously);
+                    },
+                    error => task.ContinueWith(_ => observer.OnError(error), TaskContinuationOptions.ExecuteSynchronously),
+                    () => task.ContinueWith(_ => observer.OnCompleted(), TaskContinuationOptions.ExecuteSynchronously));
             });
         }
 
-        private static Task ContinueNext<T>(Task<T> task, IObserver<T> observable)
-        {
-            return Continue(task, observable, t => observable.OnNext(t.Result));
-        }
-
-        private static void Complete<T>(Task<T> task, IObserver<T> observable)
-        {
-            Continue(task, observable, t =>
-            {
-                observable.OnNext(t.Result);
-                observable.OnCompleted();
-            });
-        }
-
-        private static Task Continue<T>(Task<T> task, IObserver<T> observable, Action<Task<T>> onResult)
-        {
-            var last = task.ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                {
-                    observable.OnError(t.Exception ?? new Exception("Exception occurred while executing asynchonous operation"));
-                    return;
-                }
-
-                if (t.IsCanceled)
-                {
-                    observable.OnCompleted();
-                    return;
-                }
-
-                onResult(t);
-            }, TaskContinuationOptions.ExecuteSynchronously);
-            return last;
-        }
     }
 }

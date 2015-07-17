@@ -14,17 +14,20 @@ namespace Absolom.Reactive.Tests
         [TestMethod]
         public async Task TestOutputSequenceOrder()
         {
-            var range = Observable.Range(1, 10);
+            var timeouts = new[] {1000, 100, 200, 0, 500, 1000, 0, 300, 100, 700};
 
-            var observable = range.SelectManyEx(async i =>
+
+            var range = Observable.Range(0, 10);
+
+            var observable = range.Select(async i =>
             {
-                await Task.Delay(1000 - (i*100));
+                await Task.Delay(timeouts[i]);
                 return i;
             });
 
             var result = await observable.Buffer(10).ToTask();
 
-            for (int i = 1; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 Assert.AreEqual(i, result[i]);
             }

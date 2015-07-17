@@ -11,10 +11,10 @@ namespace Absolom.Reactive.Output
     {
         static void Main(string[] args)
         {
-            var input = Observable.Range(1, 10);
+            var input = Observable.Range(1, 10).Concat(Observable.Never<int>());
 
             Random random = new Random();
-            var output = input.SelectMany(async i =>
+            var output = input.Select(async i =>
             {
                 await Task.Delay(random.Next(0, 1000));
                 return i;
